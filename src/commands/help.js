@@ -11,8 +11,6 @@ module.exports = {
                 .setColor(0x4437db).setTitle(`${message.client.user.username}'s Available Commands`)
                 .setDescription('In this way, you will not get confused whether you\'re using the right prefix for the bot or not.')
                 .addFields([{
-                    name: '[!autoplay] or /autoplay', value: 'Activates the autoplay mode, making the queue play indefinitely.', inline: false
-                }, {
                     name: '[!help | !commands] or `/help`', value: 'Show the list of available commands.', inline: false
                 }, {
                     name: '[!leave | !disconnect] or `/leave`', value: 'Make the bot leave the voice channel.', inline: false
