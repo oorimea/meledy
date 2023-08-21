@@ -1,7 +1,7 @@
 {
   "name": "meledy",
   "version": "0.6.6",
-  "description": "Music Bot make by PH",
+  "description": "a discord music bot written in javascript.",
   "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
