@@ -81,11 +81,6 @@ module.exports = async (client, prefix) => {
         })
     });
 
-    client.player.events.on('willAutoPlay', async (queue, tracks) => {
-        const { track } = await queue.play(tracks);
-        if (track) return queue.metadata.channel.send(`🔀 Autoplayed track \`${track.title}\`.`);
-    });
-
     client.player.events.on('audioTrackAdd', (queue, track) => {
         if (!queue.isPlaying() && queue.tracks > 0 && !queue.isEmpty()) queue.revive();
     });
@@ -102,12 +97,11 @@ module.exports = async (client, prefix) => {
                 new EmbedBuilder()
                 .setColor('Gold')
                 .addFields({
-                    name: 'Found an alternative from SoundCloud!',
-                    value: `Added ${track?.title} \`[${track?.duration}]\` to the queue!`
+                    name: 'Found an alternative from SoundCloud!', value: `Added ${track?.title} \`[${track?.duration}]\` to the queue!`
                 })
-				.setFooter({ text: `Originally queued by: ${queue.metadata.member.user.username}` })
-				.setThumbnail(track.thumbnail)
-				.setTimestamp()
+		    .setFooter({ text: `Originally queued by: ${queue.metadata.member.user.username}` })
+		    .setThumbnail(track.thumbnail)
+		    .setTimestamp()
             ]
         });
     });
