@@ -1,9 +1,10 @@
-const { Collection, EmbedBuilder } = require('discord.js');
+const { Collection, EmbedBuilder, ActivityType } = require('discord.js');
 const { Player } = require('discord-player');
 const path = require('path');
 const fs = require('fs');
 
 /**
+ * 
  * 
  * @param {import('discord.js').Client} client
  * 
@@ -17,7 +18,7 @@ module.exports = async (client, prefix) => {
         const command = require(`./commands/${file}`);
 
         if (command.name) {
-            if (typeof command.name === "string") client.commands.set(command.name, command);
+            if (typeof command.name === 'string') client.commands.set(command.name, command);
             if (Array.isArray(command.name)) {
                 for (const alias of command.name) {
                     client.commands.set(alias, command);
@@ -27,12 +28,9 @@ module.exports = async (client, prefix) => {
     }
 
     client.once('ready', () => {
-        console.log(`Logged in as ${client.user.username}`);
+        console.log(`Logged in as ${client.user.username}.`);
         client.user.setPresence({
-            status: 'dnd',
-            activities: [
-                { name: '"!help" for help.', type: 1 }
-            ]
+            activities: [{ type: ActivityType.Custom, name: 'customstatus', state: `01:06 ━━━━⬤─────── 04:05 — ${client.guilds.cache.size} servers` }],
         });
     });
 
@@ -67,21 +65,20 @@ module.exports = async (client, prefix) => {
 
     client.player = new Player(client);
     await client.player.extractors.loadDefault();
-    
+
     client.player.events.on('playerStart', (queue, track) => {
-    	if (queue.repeatMode === 0) return queue.metadata.channel.send({
-        	embeds: [
-        		new EmbedBuilder()
-        		.setColor('Blue').setTitle(`Now Playing`)
-        		.setDescription(`${track?.title} \`[${track?.duration}]\``)
-        		.setFooter({ text: `Queued by: ${queue.metadata.member.user.username}` })
-        		.setThumbnail(track.thumbnail)
-        		.setTimestamp()
-        	]
+        if (queue.repeatMode === 0) return queue.metadata.channel.send({
+            embeds: [ new EmbedBuilder()
+                .setColor('Blue').setTitle('Now Playing')
+                .setDescription(`${track.title} \`[${track?.duration}]\``)
+                .setFooter({ text: `Queued by: ${queue.metadata.member.user.username}`})
+                .setThumbnail(track.thumbnail)
+                .setTimestamp()
+            ]
         })
     });
 
-    client.player.events.on('willAutoPlay', async (queue, tracks) => {
+    client.player.events.on('willAutoplay', async (queue, tracks) => {
         const { track } = await queue.play(tracks);
         if (track) return queue.metadata.channel.send(`🔀 Autoplayed track \`${track.title}\`.`);
     });
@@ -98,16 +95,12 @@ module.exports = async (client, prefix) => {
         const { track } = await queue.play(`${trackie?.title}`, { searchEngine: 'soundcloudSearch' });
 
         return queue.metadata.channel.send({
-            embeds: [
-                new EmbedBuilder()
+            embeds: [ new EmbedBuilder()
                 .setColor('Gold')
-                .addFields({
-                    name: 'Found an alternative from SoundCloud!',
-                    value: `Added ${track?.title} \`[${track?.duration}]\` to the queue!`
-                })
-				.setFooter({ text: `Originally queued by: ${queue.metadata.member.user.username}` })
-				.setThumbnail(track.thumbnail)
-				.setTimestamp()
+                .addFields({ name: 'Found an alternative from SoundCloud!', value: `Added ${track?.title} \`[${track?.duration}]\` to the queue!` })
+                .setFooter({ text: `Originally queued by: ${queue.metadata.member.user.username}` })
+                .setThumbnail(track.thumbnail)
+                .setTimestamp()
             ]
         });
     });
