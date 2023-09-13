@@ -13,9 +13,9 @@ module.exports = {
 	name: ['play', 'p'],
 	data: new SlashCommandBuilder()
 		.setName('play').setDescription('Play a song by providing the name or URL.')
-		.addStringOption((input) => input.setName('prompt')
-		.setDescription('The title of the song.')
-		.setRequired(true).setAutocomplete(true)),
+		.addStringOption((input) => input.setName('query')
+		.setDescription('Song title/url')
+		.setRequired(true).setAutocomplete(false)),
 	/**
 	 *
 	 * @param {import('discord.js').Message | import('discord.js').CommandInteraction} message
@@ -26,7 +26,7 @@ module.exports = {
 		const player = message.client['player'];
 		const queue = player.nodes.get(message.guild.id);
 		const voiceChannel = message.member?.voice?.channel;
-		const searchQuery = message instanceof CommandInteraction ? message.options.getString('prompt', true) : args.join(' ');
+		const searchQuery = message instanceof CommandInteraction ? message.options.getString('query', true) : args.join(' ');
 
 		if (!voiceChannel) {
 			return message.reply('You are not connected to a voice channel.');
@@ -114,11 +114,11 @@ module.exports = {
 
 			const queueConstruct = player.nodes.create(message.guild, {
 				selfDeaf: true,
-				leaveOnEnd: true,
 				metadata: message,
-				leaveOnEmpty: true,
-				leaveOnEmptyCooldown: 5000,
+                leaveOnEnd: true,
 				skipOnNoStream: true,
+                leaveOnEmpty: true,
+                leaveOnEmptyCooldown: 3000,
 			});
 
 			if (!queueConstruct.connection) await queueConstruct.connect(voiceChannel);
@@ -167,28 +167,28 @@ module.exports = {
 						.setTimestamp()
 					]
 				});
-			}
-
-			const { track } = await queueConstruct.play(search.tracks);
-			return (message instanceof CommandInteraction) ? message.editReply({
-				embeds: [
-					new EmbedBuilder()
-					.setColor('Red').setTitle(`Added to queue`)
-					.setDescription(`${track?.title} \`[${track?.duration}]\``)
-					.setFooter({ text: `Queued by: ${message.member.user.username}` })
-					.setThumbnail(track.thumbnail)
-					.setTimestamp()
-				]
-			}) : message.reply({
-				embeds: [
-					new EmbedBuilder()
-					.setColor('Red').setTitle(`Added to queue`)
-					.setDescription(`${track?.title} \`[${track?.duration}]\``)
-					.setFooter({ text: `Queued by: ${message.member.user.username}` })
-					.setThumbnail(track.thumbnail)
-					.setTimestamp()
-				]
-			});
+			} else {
+                const { track } = await queueConstruct.play(search.tracks);
+                return (message instanceof CommandInteraction) ? message.editReply({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor('Red').setTitle(`Added to queue`)
+                        .setDescription(`${track?.title} \`[${track?.duration}]\``)
+                        .setFooter({ text: `Queued by: ${message.member.user.username}` })
+                        .setThumbnail(track.thumbnail)
+                        .setTimestamp()
+                    ]
+                }) : message.reply({
+                    embeds: [
+                        new EmbedBuilder()
+                        .setColor('Red').setTitle(`Added to queue`)
+                        .setDescription(`${track?.title} \`[${track?.duration}]\``)
+                        .setFooter({ text: `Queued by: ${message.member.user.username}` })
+                        .setThumbnail(track.thumbnail)
+                        .setTimestamp()
+                    ]
+                });
+            }
 		}
 	},
 	/**
@@ -197,18 +197,24 @@ module.exports = {
 	 * @returns
 	 */
 	async autocompleteRun(interaction) {
-		/** @type {import('discord-player').Player} */
-		const player = interaction.client['player'];
-		const query = interaction.options.getString('prompt', true);
-		if (!query || query.length < 1) return interaction.respond([{ name: 'Invalid value provided, please provide a track.', value: '' }])
-		const results = await player.search(query);
+        try {
+            /** @type {import('discord-player').Player} */
+            const player = interaction.client['player'];
+            const query = interaction.options ? interaction.options.getString('query', true) : "";
+            if (!query || query.trim().length < 1) return interaction.respond([{ name: 'Invalid value provided, please provide a track.', value: '' }]);
 
-		//Returns a list of songs with their title
-		return interaction.respond(
-			results.tracks.slice(0, 6).map((t) => ({
-				name: trimStringWithDots(t.title, 90),
-				value: t.url
-			}))
-		);
+            const results = await player.search(query);
+            if (!results || results.isEmpty()) return interaction.respond([{ name: 'No results found', value: '' }]);
+    
+            //Returns a list of songs with their title
+            return interaction.respond(
+                results.tracks.slice(0, 6).map((t) => ({
+                    name: trimStringWithDots(t.title, 90),
+                    value: t.url
+                }))
+            );
+        } catch (error) {
+            return interaction.respond([{ name: 'Invalid value provided, please provide a track.', value: '' }]);
+        }
 	}
 }
