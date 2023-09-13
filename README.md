@@ -10,5 +10,5 @@ a private music bot that plays any music you queue by using it's prefix `!` or b
   - add your bot's token on `TOKEN=` and please don't add any spaces.
 - `config.json`:
   - add the id of your bot by right clicking first, then paste on `clientId's` ""
-  - add the id(s) of the server you want your bot to have access to `Application Command` a.k.a (/) then paste on `guildId`
+  - ~~add the id(s) of the server you want your bot to have access to `Application Command` a.k.a (/) then paste on `guildId`~~ not needed anymore. Please only follow the top part since guildId is already removed from config.json
   - to separate, add | (no space required)
