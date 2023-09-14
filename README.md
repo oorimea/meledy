@@ -1,5 +1,5 @@
 # meledy
-a private music bot that plays any music you queue by using it's prefix `!` or by using `Application Command` a.k.a (/). It can search songs via Spotify, YouTube, and SoundCloud without any hassle.
+is an open source bot that plays any music you queue by using it's prefix `!` or by using `Application Command` a.k.a (/). It can search songs via Spotify, YouTube, and SoundCloud without any hassle.
 > [!WARNING]
 > Filters are not implemented on the bot since CPU Usage goes up. So if you're looking for them, you're in the wrong place.
 
