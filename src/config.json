@@ -1,0 +1,26 @@
+{
+    "clientID": "",
+    "nodes": [
+        {
+            "name": "Aquatica",
+            "host": "ssl.horizxon.studio",
+            "password": "horizxon.studio",
+            "port": 443,
+            "secure": true
+        },
+        {
+            "name": "Marina",
+            "host": "suki.nathan.to",
+            "password": "adowbongmanacc",
+            "port": 443,
+            "secure": true
+        },
+        {
+            "name": "Furina",
+            "host": "54.38.198.23",
+            "password": "stonemusicgay",
+            "port": 88,
+            "secure": false
+        }
+    ]
+}
